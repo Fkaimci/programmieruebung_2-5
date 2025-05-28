@@ -37,3 +37,4 @@ st.image(image, caption=st.session_state.current_user)
 image = Image.open("data/pictures/bl.jpg") #Yunus
 # Anzeigen eines Bilds mit Caption
 st.image(image, caption=st.session_state.current_user)
+
