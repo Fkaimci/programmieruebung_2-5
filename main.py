@@ -23,18 +23,10 @@ st.session_state.current_user = st.selectbox(
 
 # Dieses Mal speichern wir die Auswahl als Session State
 
-st.write(f"Der Name ist: {st.session_state.current_user}")
+st.write(f"Der Name ist: {st.session_state.current_user}") 
 
-# Laden eines Bilds
-image = Image.open("data/pictures/js.jpg") #Jannic
-# Anzeigen eines Bilds mit Caption
-st.image(image, caption=st.session_state.current_user) 
 
-image = Image.open("data/pictures/tb.jpg") #Julian
-# Anzeigen eines Bilds mit Caption
+person_data = read_data.find_person_data_by_name(st.session_state.current_user)
+picture_person = person_data["picture_path"]
+image = Image.open(picture_person)
 st.image(image, caption=st.session_state.current_user)
-
-image = Image.open("data/pictures/bl.jpg") #Yunus
-# Anzeigen eines Bilds mit Caption
-st.image(image, caption=st.session_state.current_user)
-

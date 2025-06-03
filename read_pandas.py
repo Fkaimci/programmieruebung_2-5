@@ -1,5 +1,3 @@
-# %%
-
 # Paket für Bearbeitung von Tabellen
 import pandas as pd
 import numpy as np
@@ -17,27 +15,23 @@ def read_my_csv():
     ## "\t" steht für das Trennzeichen in der txt-Datei (Tabulator anstelle von Beistrich)
     ## header = None: es gibt keine Überschriften in der txt-Datei
     df = pd.read_csv("data/activities/activity.csv")
-                   
 
     time = np.arange(0, len(df))
     df["Time"] = time
-    # Setzt die Columnnames im Dataframe
-    #df.columns = ["Messwerte in mV","Zeit in ms"]
-    
-    # Gibt den geladen Dataframe zurück
-    return df
-
-
-# %%
+ 
+    return df # Gibt den geladen Dataframe zurück
+ 
+df.columns = ["Messwerte in mV","Zeit in ms"]
+    mean_index = df.mean(axis=0)
+    print(mean_index)
 
 def make_plot(df):
     # Erstellte einen Line Plot, der ersten 2000 Werte mit der Zeit aus der x-Achse
     fig = px.line(df, x="Time", y=["PowerOriginal", "HeartRate"])
     return fig
 
-    df = pd.DataFrame(data)
+#print(df.max(y))
 
-  
 if __name__ == "__main__":
     #Lese die Datei ein
     df = read_my_csv()

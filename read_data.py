@@ -29,7 +29,7 @@ def find_person_data_by_name(suchstring):
     nachname = two_names[0]
 
     for eintrag in person_data:
-        print(eintrag)
+        # print(eintrag)
         if (eintrag["lastname"] == nachname and eintrag["firstname"] == vorname):
             print()
 
@@ -38,7 +38,7 @@ def find_person_data_by_name(suchstring):
         return {}
     
 if __name__ == "__main__":
-    person_data = load_person_data()
-    person_names = get_person_list(person_data)
+    person_data = find_person_data_by_name('Huber, Julian')
     print(person_data)
-    print(person_names)
+    picture_person = person_data["picture_path"]
+    print(picture_person)
