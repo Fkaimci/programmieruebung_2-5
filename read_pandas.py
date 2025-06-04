@@ -127,9 +127,16 @@ def make_plot(df, max_hr):
         )
 
     return fig
+
+
+
+
 if __name__ == "__main__":
     df = read_my_csv()
     #print(df.head())
     fig = make_plot(df)
     fig.show()
     #add_heart_rate_zones(df, max_HR_person)
+    print(load_data)
+
+
