@@ -29,7 +29,7 @@ Die Datei activity.csv im Ordner data/activities enthält die Herzfrequenz- und 
 
 Screenshot der App:
 
-![Screenshot der App1](programmieruebung_2-5/Screenshot App1.png)
-![Screenshot der App2](programmieruebung_2-5/Screenshot App2.png)
-![Screenshot der App3](programmieruebung_2-5/Screenshot App3.png)
+![Screenshot der App1](Screenshot App1.png)
+![Screenshot der App2](Screenshot App2.png)
+![Screenshot der App3](Screenshot App3.png)
 
