@@ -22,7 +22,7 @@ def read_my_csv():
     return df 
 
 def add_heart_rate_zones(df, max_hr):
-    zones = [] # leere Liste für die Herzfrequenzzonen 
+    zones = []  
     for hr in df["HeartRate"]:
         prozent = hr / max_hr
         if prozent < 0.6:
@@ -40,8 +40,15 @@ def add_heart_rate_zones(df, max_hr):
 
 def calculate_heart_rate_zones(df):
     zone_counts = df["HR_Zone"].value_counts().sort_index()
-    zone_durations = {zone: count for zone, count in zone_counts.items()} #jetzt in sekunden 
+    # Umrechnung in Minuten
+    zone_durations = {zone: round(count / 60, 2) for zone, count in zone_counts.items()}
     return zone_durations
+
+def calculate_average_power_per_zone(df):
+    # Gruppieren nach HR_Zone und Mittelwert der Leistung berechnen
+    avg_power_per_zone = df.groupby("HR_Zone")["PowerOriginal"].mean().round(1)
+    return avg_power_per_zone
+
 
 
 def make_plot(df, max_hr):
@@ -134,9 +141,18 @@ def make_plot(df, max_hr):
 if __name__ == "__main__":
     df = read_my_csv()
     #print(df.head())
-    fig = make_plot(df)
-    fig.show()
+    #fig = make_plot(df, max_hr)
+    #fig.show()
     #add_heart_rate_zones(df, max_HR_person)
-    print(load_data)
+    #print(load_data)
+
+    max_hr = 200  # oder ein anderer Wert
+    df = add_heart_rate_zones(df, max_hr)
+    
+    # Jetzt berechnen wir die durchschnittliche Leistung pro Zone
+    avg_power_per_zone = calculate_average_power_per_zone(df)
+    
+    print(avg_power_per_zone)
+   
 
 

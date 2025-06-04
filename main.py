@@ -12,7 +12,6 @@ st.write("## Versuchsperson auswählen")
 if 'current_user' not in st.session_state:
     st.session_state.current_user = 'None'
 
-# Legen Sie eine neue Liste mit den Personennamen an indem Sie ihre 
 # Funktionen aufrufen
 person_dict = read_data.load_person_data()
 person_names = read_data.get_person_list(person_dict)
@@ -39,17 +38,26 @@ st.write(f"Alter der Person: {alter_person} Jahre")
 st.write(f"Maximale Herzfrequenz: {max_HR_person} bpm")
 image = Image.open(picture_person)
 st.image(image, caption=st.session_state.current_user)
+#avg_power_per_zone = read_pandas.calculate_average_power_per_zone()
+
+
+#st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
+#st.bar_chart(avg_power_per_zone)
+
 
 df= read_pandas.read_my_csv()
 df = read_pandas.add_heart_rate_zones(df, max_HR_person)
 
-zone_durations = read_pandas.calculate_heart_rate_zones(df)
-
-#zum ergebnisse anzeigen 
-st.write("## Zeit in Herzfrequenzzonen")
-for zone, duration in zone_durations.items():
-    st.write(f"{zone}: {duration} Sekunden")
-
  #  Plot erstellen
 fig = read_pandas.make_plot(df, max_HR_person)
-st.plotly_chart(fig, use_container_width=True)   
+st.plotly_chart(fig, use_container_width=True)
+
+zone_durations = read_pandas.calculate_heart_rate_zones(df)
+avg_power_per_zone = read_pandas.calculate_average_power_per_zone(df)
+st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
+st.write(avg_power_per_zone)
+#zum ergebnisse anzeigen 
+
+st.write("## Zeit in Herzfrequenzzonen")
+for zone, duration in zone_durations.items():
+    st.write(f"{zone}: {duration} Minuten")
