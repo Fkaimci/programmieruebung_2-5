@@ -37,7 +37,7 @@ def find_person_data_by_name(suchstring):
     else:
         return {}
     
-if __name__ == "__main__":
+if __name__ == "__main__": #um zu testen
     person_data = find_person_data_by_name('Huber, Julian')
     print(person_data)
     picture_person = person_data["picture_path"]

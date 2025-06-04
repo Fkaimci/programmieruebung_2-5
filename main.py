@@ -1,11 +1,14 @@
 import streamlit as st
 import read_data
 from PIL import Image
+import read_pandas
+from datetime  import datetime
+
+
 
 st.write("# EKG APP")
 st.write("## Versuchsperson auswählen")
 
-# Session State wird leer angelegt, solange er noch nicht existiert
 if 'current_user' not in st.session_state:
     st.session_state.current_user = 'None'
 
@@ -28,5 +31,25 @@ st.write(f"Der Name ist: {st.session_state.current_user}")
 
 person_data = read_data.find_person_data_by_name(st.session_state.current_user)
 picture_person = person_data["picture_path"]
+geburtsjahr_person = person_data["date_of_birth"]
+aktuelles_jahr = datetime.now().year
+alter_person = aktuelles_jahr - geburtsjahr_person
+max_HR_person = 220 - alter_person
+st.write(f"Alter der Person: {alter_person} Jahre")
+st.write(f"Maximale Herzfrequenz: {max_HR_person} bpm")
 image = Image.open(picture_person)
 st.image(image, caption=st.session_state.current_user)
+
+df= read_pandas.read_my_csv()
+df = read_pandas.add_heart_rate_zones(df, max_HR_person)
+
+zone_durations = read_pandas.calculate_heart_rate_zones(df)
+
+#zum ergebnisse anzeigen 
+st.write("## Zeit in Herzfrequenzzonen")
+for zone, duration in zone_durations.items():
+    st.write(f"{zone}: {duration} Sekunden")
+
+ #  Plot erstellen
+fig = read_pandas.make_plot(df, max_HR_person)
+st.plotly_chart(fig, use_container_width=True)   
