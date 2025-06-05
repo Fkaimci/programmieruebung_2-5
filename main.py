@@ -1,63 +1,84 @@
 import streamlit as st
-import read_data
 from PIL import Image
+from datetime import datetime
+
+import read_data
 import read_pandas
-from datetime  import datetime
+from person import Person
 
+st.set_page_config(page_title="EKG Analyse", layout="wide")
 
+st.title("EKG APP")
 
-st.write("# EKG APP")
-st.write("## Versuchsperson auswählen")
+if 'current_user_name' not in st.session_state:
+    st.session_state.current_user_name = 'None'
 
-if 'current_user' not in st.session_state:
-    st.session_state.current_user = 'None'
+person_dict_list = read_data.load_person_data()
+person_names = read_data.get_person_list(person_dict_list)
 
-# Funktionen aufrufen
-person_dict = read_data.load_person_data()
-person_names = read_data.get_person_list(person_dict)
-# bzw: wenn Sie nicht zwei separate Funktionen haben
-# person_names = read_data.get_person_list()
+tab1, tab2 = st.tabs(["Personendaten", "EKG-Auswertung"])
 
-# Nutzen Sie ihre neue Liste anstelle der hard-gecodeten Lösung
-st.session_state.current_user = st.selectbox(
-    'Versuchsperson',
-    options = person_names, key="sbVersuchsperson")
+with tab1:
+    st.header("Versuchsperson auswählen")
 
-# Dieses Mal speichern wir die Auswahl als Session State
+    selected_name = st.selectbox(
+        'Versuchsperson',
+        options=person_names,
+        index=person_names.index(st.session_state.current_user_name) if st.session_state.current_user_name in person_names else 0,
+        key="sbVersuchsperson"
+    )
 
-st.write(f"Der Name ist: {st.session_state.current_user}") 
+    # Aktualisiere session state, wenn Auswahl geändert wurde
+    if selected_name != st.session_state.current_user_name:
+        st.session_state.current_user_name = selected_name
+        # Lade Person neu
+        person_data = read_data.find_person_data_by_name(selected_name)
+        if person_data:
+            st.session_state.current_person = Person(person_data)
+        else:
+            st.session_state.current_person = None
 
+    st.write(f"Ausgewählt: {st.session_state.current_user_name}")
 
-person_data = read_data.find_person_data_by_name(st.session_state.current_user)
-picture_person = person_data["picture_path"]
-geburtsjahr_person = person_data["date_of_birth"]
-aktuelles_jahr = datetime.now().year
-alter_person = aktuelles_jahr - geburtsjahr_person
-max_HR_person = 220 - alter_person
-st.write(f"Alter der Person: {alter_person} Jahre")
-st.write(f"Maximale Herzfrequenz: {max_HR_person} bpm")
-image = Image.open(picture_person)
-st.image(image, caption=st.session_state.current_user)
-#avg_power_per_zone = read_pandas.calculate_average_power_per_zone()
+    if st.session_state.current_person is not None:
+        person = st.session_state.current_person
+        st.write(f"ID: {person.id}")   
+        
+    if 'current_person' in st.session_state and st.session_state.current_person is not None:
+        person = st.session_state.current_person
+        image = Image.open(person.picture_path)
+        st.image(image, caption=st.session_state.current_user_name)
 
+        alter = person.calculate_age()
+        max_hr = person.calculate_max_heart_rate()
 
-#st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
-#st.bar_chart(avg_power_per_zone)
+        st.write(f"Alter der Person: {alter} Jahre")
+        st.write(f"Maximale Herzfrequenz: {max_hr} bpm")
+    else:
+        st.warning("Die gewählte Person konnte nicht gefunden werden.")
 
+with tab2:
+    st.header("EKG-Daten analysieren")
 
-df= read_pandas.read_my_csv()
-df = read_pandas.add_heart_rate_zones(df, max_HR_person)
+    if 'current_person' in st.session_state and st.session_state.current_person is not None:
+        person = st.session_state.current_person
+        max_hr = person.calculate_max_heart_rate()
 
- #  Plot erstellen
-fig = read_pandas.make_plot(df, max_HR_person)
-st.plotly_chart(fig, use_container_width=True)
+        df = read_pandas.read_my_csv()
+        df = read_pandas.add_heart_rate_zones(df, max_hr)
 
-zone_durations = read_pandas.calculate_heart_rate_zones(df)
-avg_power_per_zone = read_pandas.calculate_average_power_per_zone(df)
-st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
-st.write(avg_power_per_zone)
-#zum ergebnisse anzeigen 
+        fig = read_pandas.make_plot(df, max_hr)
+        st.plotly_chart(fig, use_container_width=True)
 
-st.write("## Zeit in Herzfrequenzzonen")
-for zone, duration in zone_durations.items():
-    st.write(f"{zone}: {duration} Minuten")
+        zone_durations = read_pandas.calculate_heart_rate_zones(df)
+        avg_power_per_zone = read_pandas.calculate_average_power_per_zone(df)
+
+        st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
+        st.write(avg_power_per_zone)
+
+        st.subheader("Zeit in Herzfrequenzzonen")
+        for zone, duration in zone_durations.items():
+            st.write(f"{zone}: {duration} Minuten")
+    else:
+        st.info("Bitte zuerst eine Person im Tab 'Personendaten' auswählen.")
+
