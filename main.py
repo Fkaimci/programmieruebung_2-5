@@ -1,40 +1,40 @@
 import streamlit as st
 from PIL import Image
-from datetime import datetime
-
-import read_data
-import read_pandas
 from person import Person
+from ekgdata import EKGdata
 
 st.set_page_config(page_title="EKG Analyse", layout="wide")
-
 st.title("EKG APP")
 
+# Session-Variablen initialisieren
 if 'current_user_name' not in st.session_state:
     st.session_state.current_user_name = 'None'
+if 'current_person' not in st.session_state:
+    st.session_state.current_person = None
 
-person_dict_list = read_data.load_person_data()
-person_names = read_data.get_person_list(person_dict_list)
+# Daten laden
+person_data_list = Person.load_person_data()
+person_names = Person.get_person_list(person_data_list)
 
+# Tabs
 tab1, tab2 = st.tabs(["Personendaten", "EKG-Auswertung"])
 
+# Tab 1 – Personendaten anzeigen
 with tab1:
     st.header("Versuchsperson auswählen")
 
     selected_name = st.selectbox(
-        'Versuchsperson',
+        "Versuchsperson",
         options=person_names,
         index=person_names.index(st.session_state.current_user_name) if st.session_state.current_user_name in person_names else 0,
         key="sbVersuchsperson"
     )
 
-    # Aktualisiere session state, wenn Auswahl geändert wurde
     if selected_name != st.session_state.current_user_name:
         st.session_state.current_user_name = selected_name
-        # Lade Person neu
-        person_data = read_data.find_person_data_by_name(selected_name)
-        if person_data:
-            st.session_state.current_person = Person(person_data)
+        person_dict = Person.find_person_data_by_name(selected_name)
+        if person_dict:
+            st.session_state.current_person = Person(person_dict)
         else:
             st.session_state.current_person = None
 
@@ -42,43 +42,43 @@ with tab1:
 
     if st.session_state.current_person is not None:
         person = st.session_state.current_person
-        st.write(f"ID: {person.id}")   
-        
-    if 'current_person' in st.session_state and st.session_state.current_person is not None:
-        person = st.session_state.current_person
+        st.write(f"ID: {person.id}")
+
         image = Image.open(person.picture_path)
         st.image(image, caption=st.session_state.current_user_name)
 
-        alter = person.calculate_age()
-        max_hr = person.calculate_max_heart_rate()
-
-        st.write(f"Alter der Person: {alter} Jahre")
-        st.write(f"Maximale Herzfrequenz: {max_hr} bpm")
+        st.write(f"Alter der Person: {person.calculate_age()} Jahre")
+        st.write(f"Maximale Herzfrequenz: {person.calculate_max_heart_rate()} bpm")
     else:
         st.warning("Die gewählte Person konnte nicht gefunden werden.")
 
+# Tab 2 – EKG-Daten analysieren
 with tab2:
     st.header("EKG-Daten analysieren")
 
-    if 'current_person' in st.session_state and st.session_state.current_person is not None:
+    if st.session_state.current_person is not None:
         person = st.session_state.current_person
-        max_hr = person.calculate_max_heart_rate()
+        ekg_tests = person.ekg_tests
 
-        df = read_pandas.read_my_csv()
-        df = read_pandas.add_heart_rate_zones(df, max_hr)
+        if ekg_tests:
+            # Auswahlbox: verfügbare EKG-Test-IDs
+            ekg_ids = [test["id"] for test in ekg_tests]
+            selected_ekg_id = st.selectbox("Wähle EKG-Test-ID", ekg_ids)
 
-        fig = read_pandas.make_plot(df, max_hr)
-        st.plotly_chart(fig, use_container_width=True)
+            # Hole das passende EKG-Test-Dict
+            selected_test = next((t for t in ekg_tests if t["id"] == selected_ekg_id), None)
 
-        zone_durations = read_pandas.calculate_heart_rate_zones(df)
-        avg_power_per_zone = read_pandas.calculate_average_power_per_zone(df)
+            if selected_test:
+                ekg = EKGdata(selected_test)
+                ekg.find_peaks()
+                hr = ekg.estimate_hr()
 
-        st.subheader("Durchschnittliche Leistung pro Herzfrequenzzone")
-        st.write(avg_power_per_zone)
-
-        st.subheader("Zeit in Herzfrequenzzonen")
-        for zone, duration in zone_durations.items():
-            st.write(f"{zone}: {duration} Minuten")
+                st.write(f"Datum des Tests: {ekg.date}")
+                st.write(f"Berechnete Herzfrequenz: {hr} bpm")
+                st.plotly_chart(ekg.plot_time_series(), use_container_width=True)
+            else:
+                st.warning("Der ausgewählte EKG-Test konnte nicht geladen werden.")
+        else:
+            st.info("Für diese Person sind keine EKG-Tests vorhanden.")
     else:
         st.info("Bitte zuerst eine Person im Tab 'Personendaten' auswählen.")
-

@@ -49,6 +49,8 @@ class Person:
         self.lastname = person_dict["lastname"]
         self.picture_path = person_dict["picture_path"]
         self.id = person_dict["id"]
+        self.ekg_tests = person_dict.get("ekg_tests", [])
+
    
 
     def calculate_age(self):
