@@ -19,6 +19,6 @@ Die App starten indem man oben rechts auf "Run Python File" klickt.
 Datenstruktur:
 Die Datei activity.csv im Ordner data/activities enthält die Herzfrequenz- und Leistungsdaten.
 
-Screenshot der App:
+Screenshot der Powercurve:
 
 ![Figure_1](Figure_1.png)
