@@ -26,7 +26,7 @@ def plot_and_save_powercurve(df_curve):
     plt.plot(x_minutes, df_curve['best_efforts'], marker='o', color='royalblue')
     plt.xscale('log')
 
-    # Manuelle Tick-Positionen auf der x-Achse (Minuten)
+   
     ticks = [0.1, 0.2, 0.3, 1, 2, 3, 4, 5, 10, 20, 30]
     plt.xticks(ticks, [str(t) for t in ticks])
 

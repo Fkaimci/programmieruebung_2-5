@@ -1,36 +1,24 @@
 # programmieruebung_2-5
-Aufgaben 2-5 für Progrommieren 2
-Herzfrequenz- und Leistungsanalyse mit Streamlit 
+Aufgabe 4 für Progrommieren 2
+Leistungskurve II 
 
-Diese Streamlit-App ermöglicht es, Trainingsdaten zu analysieren und visuell darzustellen. Im Fokus stehen dabei die Herzfrequenz in Bezug auf individuell definierte Trainingszonen sowie die erbrachte Leistung. Die App bietet eine übersichtliche Visualisierung in einem Plot mit eingefärbten Herzfrequenzzonen und gibt zusätzlich statistische Kennwerte wie durchschnittliche Leistung pro Zone aus.
-
-Funktionsumfang:
-- Einlesen von Aktivitätsdaten aus einer .csv-Datei
-- Berechnung und farbliche Darstellung der Herzfrequenzzonen
-- Visualisierung von Herzfrequenz (bpm) und Leistung (Watt)
-- Berechnung der durchschnittlichen Leistung pro Zone
-- Ausgabe der Verweildauer in den einzelnen Zonen (in Minuten)
+Dieses Programm ermöglicht es, eine .csv Datei mit EKG Daten einzulesen und daraus eine Power - Curve zu erstellen. Es werden unsere Messwerte in mV (auf der y-Achse) und unsere Zeit in ms (auf der x-Achse) dargestellt. 
 
 Voraussetzungen:
-Zum Ausführen des Projekts werden Python und das Paketverwaltungstool PDM benötigt. Falls PDM noch nicht installiert ist, kann es über pip installiert werden:
-pip install pdm 
+Zum Ausführen des Projekts werden Python und das Paketverwaltungstool PDM benötigt. Falls PDM noch nicht installiert ist, kann dies über pdm init gemacht werden. 
+Für den Code werden drei verschiedene Module benötigt: pandas, matplotlib und plotly. 
 
 Projekt ausführen:
 1. Projektordner klonen oder herunterladen 
 2. Im Projektverzeichnis folgende Befehle ausführen:
 pdm init 
-pdm add streamlit plotly pandas numpy 
+pdm add pandas, matplotlib, plotly
 
-Die App starten mit:
-streamlit run main.py
+Die App starten indem man oben rechts auf "Run Python File" klickt.
 
 Datenstruktur:
-Die Datei activity.csv im Ordner data/activities enthält die Herzfrequenz- und Leistungsdaten. Diese werden in read_pandas.py eingelesen und verarbeitet.
+Die Datei activity.csv im Ordner data/activities enthält die Herzfrequenz- und Leistungsdaten.
 
 Screenshot der App:
 
-
-![Screenshot der App1](ScreenshotApp1.png)
-![Screenshot der App2](ScreenshotApp2.png)
-![Screenshot der App3](ScreenshotApp3.png)
-
+![Figure_1](Figure_1.png)
